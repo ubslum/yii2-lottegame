@@ -1,0 +1,21 @@
+{
+    "name": "ubslum/yii2-lottegame",
+    "description": "Lotte Game",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension"],
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "ubslum",
+            "email": "shinichi7586@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "~2.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ubslum\\lottegame\\": ""
+        }
+    }
+}
