@@ -28,5 +28,14 @@ use yii\widgets\ActiveForm;
     <div class="scratch_viewport">
         <!-- result picture -->
         <canvas id="js-scratch-canvas"></canvas>
+
+    </div>
+</div>
+<div class="chkbox-block">
+    <div class="checkbox" id="receive-bonus-points">
+        <label><input type="checkbox" value="" checked>Nhận 279.000 điểm thưởng</label>
+    </div>
+    <div class="checkbox" id="receive-reward">
+        <label><input type="checkbox" value="" checked>Nhận quà tặng</label>
     </div>
 </div>

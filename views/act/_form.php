@@ -14,9 +14,11 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); $model->status = GameScratchCard::WIN ?>
 
-    <?= Html::hiddenInput('id_member', '', ['id' => 'id_member']); ?>
-    <?= Html::hiddenInput('pos_n', '', ['id' => 'pos_n']); ?>
-    <?= Html::hiddenInput('id_model', '', ['id' => 'id_model']); ?>
+    <?= Html::hiddenInput('id_member', '', ['id' => 'id_member']);//mã thành viên ?>
+    <?= Html::hiddenInput('pos_n', '', ['id' => 'pos_n']); //số pos ?>
+    <?= Html::hiddenInput('id_model', '', ['id' => 'id_model']); //id to update info ?>
+    <?= Html::hiddenInput('reward', '', ['id' => 'reward']); //reward ?>
+    <?= Html::hiddenInput('reward_details', '', ['id' => 'reward_details']); //reward details ?>
 
     <?= $form->field($model, 'fullname')->textInput(['maxlength' => true]) ?>
 

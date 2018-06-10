@@ -26,30 +26,56 @@ $('#reg-begin').click(function(){
             $('#id_member').val(id);
             $('#pos_n').val(pos);
             $('#id_model').val(data.id);
-            var scratch = new Scratch({
-                canvasId: 'js-scratch-canvas',
-                imageBackground: '/images/rs.png',
-                pictureOver: '/images/cover.png',
-                cursor: {
-                    // png: 'piece.png',
-                    // cur: 'piece.cur',
-                    x: '20',
-                    y: '17'
-                },
-                radius: 20,
-                nPoints: 100,
-                percent: 50,
-                callback: function () {
-                    $('.btnNext').show();
-                },
-                pointSize: { x: 3, y: 3},
-                sceneWidth: 701,
-                sceneHeight: 102
-            });
-        }
 
+            if(data.game.rs == 'W'){
+                $('#reward').val(data.game.rindex);
+                $('#reward_details').val(data.game.r);
+                var scratch = new Scratch({
+                    canvasId: 'js-scratch-canvas',
+                    imageBackground: data.game.img,
+                    pictureOver: '/images/cover.png',
+                    cursor: {
+                        // png: 'piece.png',
+                        // cur: 'piece.cur',
+                        x: '20',
+                        y: '17'
+                    },
+                    radius: 20,
+                    nPoints: 100,
+                    percent: 50,
+                    callback: function () {
+                        $('.chkbox-block').show();
+                        $('#receive-bonus-points').html('<label><input type="checkbox" value="" checked>Nhận '+data.game.p+' điểm thưởng</label>')
+                        $('.btnNext').show();
+                    },
+                    pointSize: { x: 3, y: 3},
+                    sceneWidth: 701,
+                    sceneHeight: 102
+                });
+            }else{
+                var scratch = new Scratch({
+                    canvasId: 'js-scratch-canvas',
+                    imageBackground: data.game.img,
+                    pictureOver: '/images/cover.png',
+                    cursor: {
+                        // png: 'piece.png',
+                        // cur: 'piece.cur',
+                        x: '20',
+                        y: '17'
+                    },
+                    radius: 20,
+                    nPoints: 100,
+                    percent: 50,
+                    callback: function () {
+                    },
+                    pointSize: { x: 3, y: 3},
+                    sceneWidth: 701,
+                    sceneHeight: 102
+                });
+            }
+
+        }
     });
-    return FALSE;
 });
 
 $('.btnNext').click(function(){

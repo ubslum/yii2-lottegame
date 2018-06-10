@@ -2,6 +2,7 @@
 
 namespace ubslum\lottegame\controllers;
 
+use ubslum\lottegame\models\GameScratchCardA;
 use Yii;
 use ubslum\lottegame\models\GameScratchCard;
 use ubslum\lottegame\models\GameScratchCardSearch;
@@ -55,13 +56,27 @@ class ActController extends Controller
         if(isset($_POST['id_model'])){
             $request = Yii::$app->request;
             $id = $request->post('id_model');
+            $rindex = $request->post('reward');
+            $rewardDetails = $request->post('reward_details');
             $model = $this->findModel($id);
             $model->load(Yii::$app->request->post());
             $model->setIndentityDateCreatedText($model->identity_date_created);
+            $model->reward = $rindex;
+            $model->reward_details = $rewardDetails;
+            $model->status = GameScratchCard::WIN;
             if ($model->save()) {
+                //email
+                Yii::$app->mail->compose('announce-email', ['game' => $model])
+                    ->setFrom([Yii::$app->getModule('core')->emailConfig['mailFrom'] => "LOTTE MART"])
+                    ->setTo($model->email)
+                    ->setSubject('Thông báo cào thẻ trúng thưởng - LOTTE MART')
+                    ->send();
                 return $this->redirect(['success', 'id' => $model->id]);
             }
         }
+
+//        $tmp = self::generateGameScratchCard();
+//        var_dump($tmp);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -88,13 +103,16 @@ class ActController extends Controller
         if(!GameScratchCard::find()
             ->where( [ 'id_member' => $id, 'pos_number' => $pos, 'date_created' => date('Y-m-d') ] )
             ->exists()){
-            $model = new GameScratchCard();
+            $model = new GameScratchCardA();
             $model->id_member = $id;
             $model->pos_number = $pos;
             if($model->save()){
                 $rs['rs'] = 'OK';
                 $rs['msg'] = 'Lưu thành công.';
                 $rs['id'] = $model->id;
+                //game scratch card
+                $game = self::generateGameScratchCard();
+                $rs['game'] = $game;
             }else{
                 $rs['rs'] = 'FAIL';
                 $rs['msg'] = 'Lưu thất bại.';
@@ -104,6 +122,48 @@ class ActController extends Controller
             $rs['msg'] = 'Đã tồn tại.';
         }
         echo json_encode($rs);
+    }
+
+    /*
+     * generate game info
+     * return array
+     */
+    public function generateGameScratchCard(){
+        $sc = [];
+        $amount = 10000;
+        $ratio = 0.5;//1%
+        $winArea = $amount*$ratio;
+        //random
+        $random = rand(0, $amount);
+        if($random <= $winArea){ //win
+            //choose reward
+            $model = GameScratchCard::find()
+                ->where(['date_created' => date('Y-m-d'), 'status' => GameScratchCard::WIN])
+                ->all();
+            $tmp = [];
+            foreach ($model as $m){
+                $tmp[] = $m->reward;
+            }
+            while (true){ //get unique reward
+                $rewardIndex = rand(0, 19);
+                if(in_array($rewardIndex, $tmp))
+                    continue;
+                else
+                    break;
+            }
+
+            $rewardArr = GameScratchCard::getRewards();
+            $reward = $rewardArr[$rewardIndex];
+            $sc['rs'] = 'W';
+            $sc['img'] = '/images/'.$reward['img'];
+            $sc['rindex'] = $rewardIndex;
+            $sc['r'] = json_encode($reward);
+            $sc['p'] = $reward['points'];
+        }else{ //lose
+            $sc['rs'] = 'L';
+            $sc['img'] = '/images/rs0.png';
+        }
+        return $sc;
     }
 
     /**
@@ -125,6 +185,7 @@ class ActController extends Controller
      */
     public function actionCreate()
     {
+        return;
         $model = new GameScratchCard();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -144,6 +205,7 @@ class ActController extends Controller
      */
     public function actionUpdate($id)
     {
+        return;
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -182,6 +244,28 @@ class ActController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    /**
+     * Lists all ChoiceQuestion models.
+     * @return mixed
+     */
+    public function actionAdmin()
+    {
+        $this->layout = "minimum-layout";
+        $searchModel = new GameScratchCardSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('admin', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionSuccess(){
+        $this->layout = "minimum-layout";
+        return $this->render('success', [
+        ]);
     }
 
 
